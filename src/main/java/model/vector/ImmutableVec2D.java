@@ -1,4 +1,4 @@
-package view;
+package model.vector;
 
 public interface ImmutableVec2D {
   /**

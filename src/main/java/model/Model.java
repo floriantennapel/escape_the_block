@@ -3,7 +3,7 @@ package model;
 import controller.ControllableModel;
 import model.vector.Matrix;
 import model.vector.Vec2D;
-import view.ImmutableVec2D;
+import model.vector.ImmutableVec2D;
 import view.ViewableModel;
 
 public class Model implements ViewableModel, ControllableModel {

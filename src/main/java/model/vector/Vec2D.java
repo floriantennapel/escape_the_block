@@ -1,7 +1,5 @@
 package model.vector;
 
-import view.ImmutableVec2D;
-
 import java.util.Arrays;
 
 public class Vec2D implements ImmutableVec2D {

@@ -1,5 +1,6 @@
 package view;
 
+import model.vector.ImmutableVec2D;
 import model.vector.Vec2D;
 
 import javax.swing.*;

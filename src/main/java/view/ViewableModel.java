@@ -1,5 +1,7 @@
 package view;
 
+import model.vector.ImmutableVec2D;
+
 public interface ViewableModel {
   int checkGridCell(int row, int col);
 
