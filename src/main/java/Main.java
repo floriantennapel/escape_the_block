@@ -1,3 +1,4 @@
+import controller.BlockController;
 import controller.KeyController;
 import model.Model;
 import view.View;
@@ -9,6 +10,7 @@ public class Main {
     var model = new Model(30);
     var view = new View(model);
     new KeyController(model, view);
+    new BlockController(model, view);
 
     JFrame frame = new JFrame("escape the block");
     frame.setContentPane(view);

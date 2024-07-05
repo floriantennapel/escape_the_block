@@ -28,14 +28,9 @@ public class Matrix {
 
   /**
    * Creates a matrix to scale a vector
-   * @param scalar 0 is not allowed, since this is not reversible
    * @return a new {@code Matrix} to be used in linear transformations
    */
   public static Matrix newScalarMat(double scalar) {
-    if (Math.abs(scalar - 0) < 0.00001) {
-      throw new IllegalArgumentException("scalar cannot be 0");
-    }
-
     return new Matrix(
         new double[][] {{scalar, 0, 0}, {0, scalar, 0}, {0, 0, 1}}
     );
@@ -71,7 +66,7 @@ public class Matrix {
    * <br/>
    * <br/>
    * {@code a} is on the left hand side and {@code this} is on the right
-   * i.e. {@code a} X {@code this}
+   * i.e. {@code b.mul(a) == a * b}
    * @param a left hand side of matrix product
    * @return result of the multiplication
    */

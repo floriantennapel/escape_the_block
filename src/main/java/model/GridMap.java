@@ -1,8 +1,9 @@
 package model;
 
+import model.vector.GridVec;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class GridMap {
   // chance of each grid cell being a wall when generating map
@@ -10,12 +11,13 @@ public class GridMap {
 
   private final List<List<Integer>> gridMap;
 
-  public GridMap(int mapSize) {
+  public GridMap(int mapSize, GridVec blockStartPos) {
     if (mapSize < 3 || mapSize > 1000) {
       throw new IllegalArgumentException("invalid map size");
     }
 
     gridMap = generateRandomMap(mapSize);
+    gridMap.get(blockStartPos.y()).set(blockStartPos.x(), 2);
   }
 
   public int get(int row, int col) {
@@ -24,6 +26,17 @@ public class GridMap {
     }
 
     return gridMap.get(row).get(col);
+  }
+
+  public void set(GridVec pos, int val) {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
+    if (pos.y() < 0 || pos.y() >= gridMap.size() || pos.x() < 0 || pos.x() >= gridMap.get(0).size()) {
+      throw new IndexOutOfBoundsException();
+    }
+
+    gridMap.get(pos.y()).set(pos.x(), val);
   }
 
   private List<List<Integer>> generateRandomMap(int mapSize) {
@@ -43,10 +56,6 @@ public class GridMap {
 
       retList.add(row);
     }
-
-    // placing "THE BLOCK"
-    Random r = new Random();
-    retList.get(r.nextInt(1, retList.size() - 1)).set(r.nextInt(1, retList.get(0).size() - 1), 2);
     return retList;
   }
 

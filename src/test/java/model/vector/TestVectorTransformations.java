@@ -1,6 +1,7 @@
 package model.vector;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestVectorTransformations {
@@ -30,11 +31,6 @@ public class TestVectorTransformations {
 
   @Test
   public void testScaling1() {
-    assertThrows(IllegalArgumentException.class, () -> Matrix.newScalarMat(0.00000001));
-  }
-
-  @Test
-  public void testScaling2() {
     var vec = new Vec2D(4, 9);
     var scaleMat = Matrix.newScalarMat(1);
     vec.transform(scaleMat);
@@ -42,7 +38,7 @@ public class TestVectorTransformations {
   }
 
   @Test
-  public void testScaling3() {
+  public void testScaling2() {
     var vec = new Vec2D(4, 9);
     var scaleMat = Matrix.newScalarMat(-2.5);
     vec.transform(scaleMat);
