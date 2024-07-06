@@ -44,10 +44,10 @@ public class BlockController implements ActionListener {
   }
 
   private GridVec bfs() {
-    var playerPos = new GridVec(model.getPos());
+    var playerPos = new GridVec(model.getPlayerPos());
 
     Queue<QueueElem> queue = new ArrayDeque<>();
-    queue.add(new QueueElem(model.getBlockPos(), null, 0));
+    queue.add(new QueueElem(model.getBlockPos(), null));
     Set<GridVec> visited = new HashSet<>();
 
     while (!queue.isEmpty()) {
@@ -67,8 +67,8 @@ public class BlockController implements ActionListener {
 
       for (var dir : MOVE_DIRECTIONS) {
         var nextBlock = GridVec.add(current.pos, dir);
-        if (model.checkGridCell(nextBlock) == 0) {
-          queue.add(new QueueElem(nextBlock, current, current.steps + 1));
+        if (model.isValidPos(nextBlock) && model.checkGridCell(nextBlock) == 0) {
+          queue.add(new QueueElem(nextBlock, current));
         }
       }
     }
@@ -89,5 +89,5 @@ public class BlockController implements ActionListener {
     return after;
   }
 
-  private record QueueElem(GridVec pos, QueueElem prev, int steps) {}
+  private record QueueElem(GridVec pos, QueueElem prev) {}
 }

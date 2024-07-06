@@ -35,8 +35,15 @@ public class GridMap {
     gridMap.get(blockPos.y()).set(blockPos.x(), 2);
   }
 
+  /**
+   * checks if position is on gridMap
+   */
+  public boolean validPos(GridVec pos) {
+    return pos.x() >= 0 && pos.x() < cols && pos.y() >= 0 && pos.y() < rows;
+  }
+
   public int get(GridVec v) {
-    if (v.y() < 0 || v.y() >= rows || v.x() < 0 || v.x() >= cols) {
+    if (!validPos(v)) {
       throw new IndexOutOfBoundsException();
     }
 
@@ -50,7 +57,7 @@ public class GridMap {
     if (val < 0 || val > 100) {
       throw new IllegalArgumentException("Invalid cell value");
     }
-    if (pos.y() < 0 || pos.y() >= rows || pos.x() < 0 || pos.x() >= cols) {
+    if (!validPos(pos)) {
       throw new IndexOutOfBoundsException();
     }
 

@@ -71,14 +71,14 @@ public class KeyController implements KeyListener, ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
-    Vec2D currentPos = model.getPos();
+    Vec2D currentPos = model.getPlayerPos();
     Vec2D toMove = new Vec2D(0, 0);
 
     boolean isMoving = false;
     for (var dir : Direction.values()) {
       if (moving.get(dir)) {
         if (dir != Direction.ROT_LEFT && dir != Direction.ROT_RIGHT) {
-          Vec2D moveDir = model.getDir();
+          Vec2D moveDir = model.getPlayerDir();
           moveDir = moveDir.rotate(MOVE_ANGLES.get(dir));
           toMove = Vec2D.add(toMove, moveDir);
           isMoving = true;

@@ -48,7 +48,7 @@ public class View extends JPanel {
 
   private List<Vec2D> generateRays() {
     int winWidth = getWidth();
-    Vec2D vp = model.getViewPort();
+    Vec2D vp = model.getViewport();
     Vec2D dir = model.getPlayerDir();
 
     List<Vec2D> rays = new ArrayList<>(winWidth);
@@ -69,7 +69,6 @@ public class View extends JPanel {
    */
   private RayInfo castRay(Vec2D rayDir) {
     var playerPos = model.getPlayerPos();
-
     var mapPos = new GridVec(playerPos);
 
     // 1. / 0 == Double.INFINITY which is the desired behaviour

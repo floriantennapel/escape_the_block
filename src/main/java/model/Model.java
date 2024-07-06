@@ -13,7 +13,7 @@ public class Model implements ViewableModel, ControllableModel {
   private Vec2D viewPort;
   private GridVec blockPos;
 
-  // if controller finds out that the block is blocked from reaching player, a new map is generated
+  // new map is generated if block cannot reach player
   private GridMap map;
   private final int mapSize;
 
@@ -42,7 +42,11 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public int checkGridCell(GridVec pos) {
+  public int checkGridCell(GridVec pos) throws IndexOutOfBoundsException {
+    if (!map.validPos(pos)) {
+      throw new IndexOutOfBoundsException();
+    }
+
     return map.get(pos);
   }
 
@@ -52,10 +56,19 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public void setBlockPos(GridVec pos) {
+  public void setBlockPos(GridVec pos) throws IndexOutOfBoundsException {
+    if (!map.validPos(pos)) {
+      throw new IndexOutOfBoundsException();
+    }
+
     map.set(blockPos, 0);
     blockPos = pos;
     map.set(blockPos, 2);
+  }
+
+  @Override
+  public boolean isValidPos(GridVec pos) {
+    return map.validPos(pos);
   }
 
   @Override
@@ -64,27 +77,21 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public void setPlayerPos(Vec2D pos) {
+  public void setPlayerPos(Vec2D pos) throws IndexOutOfBoundsException {
+    if (!map.validPos(new GridVec(pos))) {
+      throw new IndexOutOfBoundsException();
+    }
+
     playerPos = pos;
   }
 
   @Override
-  public Vec2D getPlayerDir() {
-    return playerDir;
-  }
-
-  @Override
-  public Vec2D getViewPort() {
+  public Vec2D getViewport() {
     return viewPort;
   }
 
   @Override
-  public Vec2D getPos() {
-    return playerPos;
-  }
-
-  @Override
-  public Vec2D getDir() {
+  public Vec2D getPlayerDir() {
     return playerDir;
   }
 
