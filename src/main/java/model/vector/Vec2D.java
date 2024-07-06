@@ -5,6 +5,9 @@ public record Vec2D(double x, double y) {
     return new Vec2D(a.x + b.x, a.y + b.y);
   }
 
+  /**
+   * @return result of scaling {@code this}
+   */
   public Vec2D scale(double scalar) {
     return new Vec2D(x * scalar, y * scalar);
   }

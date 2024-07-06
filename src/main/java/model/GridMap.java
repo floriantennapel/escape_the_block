@@ -42,15 +42,22 @@ public class GridMap {
     return pos.x() >= 0 && pos.x() < cols && pos.y() >= 0 && pos.y() < rows;
   }
 
-  public int get(GridVec v) {
-    if (!validPos(v)) {
+  /**
+   * @return value stored at given position
+   */
+  public int get(GridVec pos) throws IndexOutOfBoundsException {
+    if (!validPos(pos)) {
       throw new IndexOutOfBoundsException();
     }
 
-    return gridMap.get(v.y()).get(v.x());
+    return gridMap.get(pos.y()).get(pos.x());
   }
 
-  public void set(GridVec pos, int val) {
+  /**
+   * Set value at given position
+   * @param val must be in range 0 to 99
+   */
+  public void set(GridVec pos, int val) throws IndexOutOfBoundsException {
     if (pos == null) {
       throw new NullPointerException();
     }

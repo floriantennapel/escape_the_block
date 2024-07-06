@@ -8,6 +8,9 @@ public record GridVec (int x, int y) {
     this((int) v.x(), (int) v.y());
   }
 
+  /**
+   * @return result of vector addition
+   */
   public static GridVec add(GridVec a, GridVec b) {
     return new GridVec(a.x + b.x, a.y + b.y);
   }
