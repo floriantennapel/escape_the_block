@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import model.vector.GridVec;
 import model.vector.Matrix;
 import model.vector.Vec2D;
 import view.View;
@@ -92,6 +93,12 @@ public class KeyController implements KeyListener, ActionListener {
     if (isMoving) {
       toMove.scale(MOVE_AMOUNT / toMove.length());
       pos.add(toMove);
+
+      // bounds checking
+      if (model.checkGridCell(new GridVec(pos)) != 0) {
+        toMove.scale(-1);
+        pos.add(toMove);
+      }
     }
 
     view.repaint();

@@ -6,7 +6,6 @@ import model.vector.Vec2D;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
@@ -29,24 +28,22 @@ public class View extends JPanel {
     super.paintComponent(g);
     Graphics2D g2 = (Graphics2D) g;
 
+    paintWorld(g2);
+  }
+
+  private void paintWorld(Graphics2D g2) {
     int winHeight = getHeight();
     int winWidth = getWidth();
 
-    BufferedImage bufferedImage = new BufferedImage(winWidth, winHeight, BufferedImage.TYPE_INT_ARGB);
-    Graphics2D buffer = bufferedImage.createGraphics();
-
-    List<ImmutableVec2D> rays = generateRays();
+    var rays = generateRays();
     for (int i = 0; i < winWidth; i++) {
       var rayInfo = castRay(rays.get(i));
       double lineHeight = winHeight / rayInfo.distance();
       double y1 = (winHeight + lineHeight) / 2.;
       Line2D line = new Line2D.Double(i, y1, i, y1 - lineHeight);
-      buffer.setColor(rayInfo.color());
-      buffer.draw(line);
+      g2.setColor(rayInfo.color());
+      g2.draw(line);
     }
-
-    buffer.dispose();
-    g2.drawImage(bufferedImage, 0, 0, null);
   }
 
   private List<ImmutableVec2D> generateRays() {
