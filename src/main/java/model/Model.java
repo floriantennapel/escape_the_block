@@ -27,7 +27,7 @@ public class Model implements ViewableModel, ControllableModel {
 
     var rand = new Random();
 
-    playerPos = new Vec2D(rand.nextInt(1, mapSize - 1) + 0.5, rand.nextInt(1, mapSize - 1) + 0.5);
+    playerPos = new Vec2D(rand.nextInt(2, mapSize - 2) + 0.5, rand.nextInt(2, mapSize - 2) + 0.5);
     var discretePlayerPos = new GridVec(playerPos);
 
     // making sure block is not spawned too close to player

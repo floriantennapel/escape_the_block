@@ -7,7 +7,7 @@ import java.util.List;
 
 public class GridMap {
   // chance of each grid cell being a wall when generating map
-  private static final double WALL_SPAWN_RATE = 0.15;
+  private static final double WALL_SPAWN_RATE = 0.3;
 
   private final List<List<Integer>> gridMap;
   private final int rows;
