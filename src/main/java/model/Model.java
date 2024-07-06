@@ -2,18 +2,19 @@ package model;
 
 import controller.ControllableModel;
 import model.vector.GridVec;
-import model.vector.Matrix;
 import model.vector.Vec2D;
-import model.vector.ImmutableVec2D;
 import view.ViewableModel;
 
+import java.util.Random;
+
 public class Model implements ViewableModel, ControllableModel {
-  private final Vec2D playerPos;
-  private final Vec2D playerDir;
-  private final Vec2D viewPort;
+  private Vec2D playerPos;
+  private Vec2D playerDir;
+  private Vec2D viewPort;
   private GridVec blockPos;
 
-  private final GridMap map;
+  // if controller finds out that the block is blocked from reaching player, a new map is generated
+  private GridMap map;
   private final int mapSize;
 
   public Model(int mapSize) {
@@ -21,23 +22,33 @@ public class Model implements ViewableModel, ControllableModel {
       throw new IllegalArgumentException("invalid map size");
     }
 
-    blockPos = new GridVec(1, 1);
-
-    playerPos = new Vec2D(10, 10);
     playerDir = new Vec2D(0, 1);
     viewPort = new Vec2D(0.7, 0);
-    map = new GridMap(mapSize, blockPos);
+
+    var rand = new Random();
+
+    playerPos = new Vec2D(rand.nextInt(1, mapSize - 1) + 0.5, rand.nextInt(1, mapSize - 1) + 0.5);
+    var discretePlayerPos = new GridVec(playerPos);
+
+    // making sure block is not spawned too close to player
+    int startDist = 10;
+    do {
+      blockPos = new GridVec(rand.nextInt(1, mapSize - 1), rand.nextInt(1, mapSize - 1));
+    } while (blockPos.distance(discretePlayerPos) < startDist);
+
+    map = new GridMap(mapSize, blockPos, discretePlayerPos);
+
     this.mapSize = mapSize;
   }
 
   @Override
-  public int checkGridCell(int row, int col) {
-    return map.get(row, col);
+  public int checkGridCell(GridVec pos) {
+    return map.get(pos);
   }
 
   @Override
-  public int checkGridCell(GridVec gv) {
-    return map.get(gv.y(), gv.x());
+  public void generateNewMap() {
+    map = new GridMap(mapSize, blockPos, new GridVec(playerPos));
   }
 
   @Override
@@ -48,17 +59,22 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public ImmutableVec2D getPlayerPos() {
+  public Vec2D getPlayerPos() {
     return playerPos;
   }
 
   @Override
-  public ImmutableVec2D getPlayerDir() {
+  public void setPlayerPos(Vec2D pos) {
+    playerPos = pos;
+  }
+
+  @Override
+  public Vec2D getPlayerDir() {
     return playerDir;
   }
 
   @Override
-  public ImmutableVec2D getViewPort() {
+  public Vec2D getViewPort() {
     return viewPort;
   }
 
@@ -73,9 +89,9 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public void rotatePlayerDir(Matrix rotMat) {
-    playerDir.transform(rotMat);
-    viewPort.transform(rotMat);
+  public void rotatePlayerDir(double theta) {
+    playerDir = playerDir.rotate(theta);
+    viewPort = viewPort.rotate(theta);
   }
 
   @Override

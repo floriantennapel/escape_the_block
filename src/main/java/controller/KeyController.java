@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import model.vector.GridVec;
-import model.vector.Matrix;
 import model.vector.Vec2D;
 import view.View;
 
@@ -16,19 +15,18 @@ import javax.swing.*;
 
 public class KeyController implements KeyListener, ActionListener {
   private final static double MOVE_AMOUNT = 0.05;
-  private final static Map<Direction, Matrix> MOVE_MATRICES = Map.of(
-      Direction.FRONT, Matrix.newScalarMat(1),
-      Direction.BACK, Matrix.newScalarMat(-1),
-      Direction.LEFT, Matrix.newRotMat(Math.PI / 2.),
-      Direction.RIGHT, Matrix.newRotMat(Math.PI / -2.),
-      Direction.ROT_LEFT, Matrix.newRotMat(MOVE_AMOUNT),
-      Direction.ROT_RIGHT, Matrix.newRotMat(-MOVE_AMOUNT)
+  private final static Map<Direction, Double> MOVE_ANGLES = Map.of(
+      Direction.FRONT, 0.,
+      Direction.BACK, Math.PI,
+      Direction.LEFT, Math.PI / 2.,
+      Direction.RIGHT, - Math.PI / 2.,
+      Direction.ROT_LEFT, MOVE_AMOUNT,
+      Direction.ROT_RIGHT, -MOVE_AMOUNT
   );
 
   private final Map<Direction, Boolean> moving;
   private final ControllableModel model;
   private final View view;
-  private final Vec2D pos;
   private final Timer timer;
 
   public KeyController(ControllableModel model, View view) {
@@ -42,7 +40,6 @@ public class KeyController implements KeyListener, ActionListener {
 
     this.model = model;
     this.view = view;
-    pos = model.getPos();
 
     timer = new Timer(1000 / 60, this);
     timer.start();
@@ -74,30 +71,30 @@ public class KeyController implements KeyListener, ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
+    Vec2D currentPos = model.getPos();
     Vec2D toMove = new Vec2D(0, 0);
 
     boolean isMoving = false;
     for (var dir : Direction.values()) {
       if (moving.get(dir)) {
         if (dir != Direction.ROT_LEFT && dir != Direction.ROT_RIGHT) {
-          Vec2D moveDir = new Vec2D(model.getDir());
-          moveDir.transform(MOVE_MATRICES.get(dir));
-          toMove.add(moveDir);
+          Vec2D moveDir = model.getDir();
+          moveDir = moveDir.rotate(MOVE_ANGLES.get(dir));
+          toMove = Vec2D.add(toMove, moveDir);
           isMoving = true;
         } else {
-          model.rotatePlayerDir(MOVE_MATRICES.get(dir));
+          model.rotatePlayerDir(MOVE_ANGLES.get(dir));
         }
       }
     }
 
     if (isMoving) {
-      toMove.scale(MOVE_AMOUNT / toMove.length());
-      pos.add(toMove);
+      toMove = toMove.scale(MOVE_AMOUNT / toMove.length());
+      var nextPos = Vec2D.add(currentPos, toMove);
 
       // bounds checking
-      if (model.checkGridCell(new GridVec(pos)) != 0) {
-        toMove.scale(-1);
-        pos.add(toMove);
+      if (model.checkGridCell(new GridVec(nextPos)) == 0) {
+        model.setPlayerPos(nextPos);
       }
     }
 

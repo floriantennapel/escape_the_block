@@ -1,6 +1,6 @@
 package view;
 
-import model.vector.ImmutableVec2D;
+import model.vector.GridVec;
 import model.vector.Vec2D;
 
 import javax.swing.*;
@@ -46,16 +46,16 @@ public class View extends JPanel {
     }
   }
 
-  private List<ImmutableVec2D> generateRays() {
+  private List<Vec2D> generateRays() {
     int winWidth = getWidth();
-    ImmutableVec2D vp = model.getViewPort();
+    Vec2D vp = model.getViewPort();
+    Vec2D dir = model.getPlayerDir();
 
-    List<ImmutableVec2D> rays = new ArrayList<>(winWidth);
+    List<Vec2D> rays = new ArrayList<>(winWidth);
 
     for (int i = 0; i < winWidth; i++) {
       double vpScalar = 2. * i / winWidth - 1;
-      Vec2D ray = new Vec2D(model.getPlayerDir());
-      ray.add(Vec2D.scaled(vp, vpScalar));
+      var ray = Vec2D.add(dir, vp.scale(vpScalar));
 
       rays.add(ray);
     }
@@ -67,42 +67,39 @@ public class View extends JPanel {
    * DDA algorithm, based on this <a href="https://lodev.org/cgtutor/raycasting.html">article</a>
    * by Lode Vandevenne
    */
-  private RayInfo castRay(ImmutableVec2D rayDir) {
-    double rayX = rayDir.get(0);
-    double rayY = rayDir.get(1);
-    double playerX = model.getPlayerPos().get(0);
-    double playerY = model.getPlayerPos().get(1);
+  private RayInfo castRay(Vec2D rayDir) {
+    var playerPos = model.getPlayerPos();
 
-    int mapX = (int) playerX;
-    int mapY = (int) playerY;
+    var mapPos = new GridVec(playerPos);
 
     // 1. / 0 == Double.INFINITY which is the desired behaviour
-    double deltaDistX = Math.abs(1. / rayX);
-    double deltaDistY = Math.abs(1. / rayY);
+    double deltaDistX = Math.abs(1. / rayDir.x());
+    double deltaDistY = Math.abs(1. / rayDir.y());
 
-    double totalDistX = rayX < 0 ? (playerX - mapX) * deltaDistX : (mapX + 1 - playerX) * deltaDistX;
-    double totalDistY = rayY < 0 ? (playerY - mapY) * deltaDistY : (mapY + 1 - playerY) * deltaDistY;
-    int stepX = rayX < 0 ? -1 : 1;
-    int stepY = rayY < 0 ? -1 : 1;
+    double totalDistX = rayDir.x() < 0 ? (playerPos.x() - mapPos.x()) * deltaDistX : (mapPos.x() + 1 - playerPos.x()) * deltaDistX;
+    double totalDistY = rayDir.y() < 0 ? (playerPos.y() - mapPos.y()) * deltaDistY : (mapPos.y() + 1 - playerPos.y()) * deltaDistY;
+
+    var stepX = new GridVec(rayDir.x() < 0 ? -1 : 1, 0);
+    var stepY = new GridVec(0, rayDir.y() < 0 ? -1 : 1);
 
     boolean wallDirIsX = false; // only initialized for compiler
     boolean hitWall = false;
     while (!hitWall) {
       if (totalDistX < totalDistY) {
         totalDistX += deltaDistX;
-        mapX += stepX;
+        mapPos = GridVec.add(mapPos, stepX);
         wallDirIsX = true;
       } else {
         totalDistY += deltaDistY;
-        mapY += stepY;
+        mapPos = GridVec.add(mapPos, stepY);
         wallDirIsX = false;
       }
 
-      hitWall = model.checkGridCell(mapY, mapX) != 0;
+      hitWall = model.checkGridCell(mapPos) != 0;
     }
 
     double rayLength = wallDirIsX ? totalDistX - deltaDistX : totalDistY - deltaDistY;
-    Color color = cellCodeToColor.get(model.checkGridCell(mapY, mapX));
+    Color color = cellCodeToColor.get(model.checkGridCell(mapPos));
     if (wallDirIsX) {
       color = color.darker();
     }

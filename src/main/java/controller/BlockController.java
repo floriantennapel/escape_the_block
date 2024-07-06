@@ -24,13 +24,22 @@ public class BlockController implements ActionListener {
     this.model = model;
     this.view = view;
 
+    // checking if player is reachable
+    while (bfs() == null) {
+      model.generateNewMap();
+    }
+
     timer = new Timer(1000, this);
     timer.start();
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    model.setBlockPos(bfs());
+    GridVec path = bfs();
+    if (path == null) {
+      path = model.getBlockPos();
+    }
+    model.setBlockPos(path);
     view.repaint();
   }
 
@@ -65,7 +74,7 @@ public class BlockController implements ActionListener {
     }
 
     System.err.println("No path found");
-    return model.getBlockPos();
+    return null;
   }
 
   private GridVec getFirstStep(QueueElem qe) {

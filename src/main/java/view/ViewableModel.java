@@ -1,14 +1,15 @@
 package view;
 
-import model.vector.ImmutableVec2D;
+import model.vector.GridVec;
+import model.vector.Vec2D;
 
 public interface ViewableModel {
-  int checkGridCell(int row, int col);
+  int checkGridCell(GridVec pos);
 
-  ImmutableVec2D getPlayerPos();
+  Vec2D getPlayerPos();
 
-  ImmutableVec2D getPlayerDir();
+  Vec2D getPlayerDir();
 
-  ImmutableVec2D getViewPort();
+  Vec2D getViewPort();
 }
 

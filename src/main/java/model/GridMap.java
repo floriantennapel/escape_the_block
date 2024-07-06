@@ -10,43 +10,63 @@ public class GridMap {
   private static final double WALL_SPAWN_RATE = 0.15;
 
   private final List<List<Integer>> gridMap;
+  private final int rows;
+  private final int cols;
 
-  public GridMap(int mapSize, GridVec blockStartPos) {
+  public GridMap(int mapSize, GridVec blockPos, GridVec playerPos) {
     if (mapSize < 3 || mapSize > 1000) {
       throw new IllegalArgumentException("invalid map size");
     }
 
-    gridMap = generateRandomMap(mapSize);
-    gridMap.get(blockStartPos.y()).set(blockStartPos.x(), 2);
+    rows = mapSize;
+    cols = mapSize;
+
+    var reserved = new ArrayList<GridVec>();
+    reserved.add(blockPos);
+
+    // keeping starting area clear of blocks
+    for (int i = -1; i <= 1; i++) {
+      for (int j = -1; j <= 1; j++) {
+        reserved.add(GridVec.add(playerPos, new GridVec(j, i)));
+      }
+    }
+
+    gridMap = generateRandomMap(mapSize, reserved);
+    gridMap.get(blockPos.y()).set(blockPos.x(), 2);
   }
 
-  public int get(int row, int col) {
-    if (row < 0 || row >= gridMap.size() || col < 0 || col >= gridMap.get(0).size()) {
+  public int get(GridVec v) {
+    if (v.y() < 0 || v.y() >= rows || v.x() < 0 || v.x() >= cols) {
       throw new IndexOutOfBoundsException();
     }
 
-    return gridMap.get(row).get(col);
+    return gridMap.get(v.y()).get(v.x());
   }
 
   public void set(GridVec pos, int val) {
     if (pos == null) {
       throw new NullPointerException();
     }
-    if (pos.y() < 0 || pos.y() >= gridMap.size() || pos.x() < 0 || pos.x() >= gridMap.get(0).size()) {
+    if (val < 0 || val > 100) {
+      throw new IllegalArgumentException("Invalid cell value");
+    }
+    if (pos.y() < 0 || pos.y() >= rows || pos.x() < 0 || pos.x() >= cols) {
       throw new IndexOutOfBoundsException();
     }
 
     gridMap.get(pos.y()).set(pos.x(), val);
   }
 
-  private List<List<Integer>> generateRandomMap(int mapSize) {
+  private List<List<Integer>> generateRandomMap(int mapSize, List<GridVec> reserved) {
     List<List<Integer>> retList = new ArrayList<>(mapSize);
 
     for (int i = 0; i < mapSize; i++) {
       List<Integer> row = new ArrayList<>(mapSize);
       row.add(1);
       for (int j = 1; j < mapSize - 1; j++) {
-        if (i == 0 || i == mapSize - 1 || Math.random() < WALL_SPAWN_RATE) {
+        if (i == 0 || i == mapSize - 1) {
+          row.add(1);
+        } else if (Math.random() < WALL_SPAWN_RATE && !occupied(i, j, reserved)) {
           row.add(1);
         } else {
           row.add(0);
@@ -57,6 +77,16 @@ public class GridMap {
       retList.add(row);
     }
     return retList;
+  }
+
+  private boolean occupied(int r, int c, List<GridVec> reserved) {
+    for (var p : reserved) {
+      if (p.x() == c && p.y() == r) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @Override
