@@ -6,6 +6,13 @@ public record Vec2D(double x, double y) {
   }
 
   /**
+   * dot product of to vectors
+   */
+  public static double dotProduct(Vec2D a, Vec2D b) {
+    return a.x * b.x + a.y * b.y;
+  }
+
+  /**
    * @return result of scaling {@code this}
    */
   public Vec2D scale(double scalar) {

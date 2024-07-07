@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import model.vector.GridVec;
@@ -14,6 +15,7 @@ import view.View;
 import javax.swing.*;
 
 public class KeyController implements KeyListener, ActionListener {
+  private final static double BOUNDING_RADIUS = 0.3;
   private final static double MOVE_AMOUNT = 0.05;
   private final static Map<Direction, Double> MOVE_ANGLES = Map.of(
       Direction.FRONT, 0.,
@@ -103,15 +105,67 @@ public class KeyController implements KeyListener, ActionListener {
       var nextPos = Vec2D.add(currentPos, toMove);
 
       // bounds checking
-      switch (model.checkGridCell(new GridVec(nextPos))) {
-        case 0 -> model.setPlayerPos(nextPos);
-        case 2 -> {
-          model.setPlayerPos(nextPos);
-          model.setGameOver();
+      if (!isValidPlayerPos(nextPos)) {
+        toMove = wallSlide(currentPos, toMove);
+        if (toMove == null) {
+          return;
         }
-        default -> {}
+        nextPos = Vec2D.add(currentPos, toMove);
+      }
+
+      model.setPlayerPos(nextPos);
+
+      if (model.checkGridCell(new GridVec(nextPos)) == 2) {
+        model.setGameOver();
       }
     }
+  }
+
+  private Vec2D wallSlide(Vec2D pos, Vec2D dir) {
+    Vec2D rotLeft = dir;
+    Vec2D rotRight = dir;
+
+    double rotAmount = 0.1;
+
+    double cos = cosAngleDiff(dir, rotLeft);
+    while (cos > 0.25) {
+      rotLeft = rotLeft.rotate(rotAmount);
+      rotRight = rotRight.rotate(-rotAmount);
+
+      cos = cosAngleDiff(dir, rotLeft);
+      double scalar = cos * MOVE_AMOUNT / rotLeft.length();
+      rotLeft = rotLeft.scale(scalar);
+      rotRight = rotRight.scale(scalar);
+
+      if (isValidPlayerPos(Vec2D.add(pos, rotLeft))) {
+        return rotLeft;
+      } else if (isValidPlayerPos(Vec2D.add(pos, rotRight))) {
+        return rotRight;
+      }
+    }
+
+    return null;
+  }
+
+  private static double cosAngleDiff(Vec2D a, Vec2D b) {
+    return Vec2D.dotProduct(a, b) / a.length() / b.length();
+  }
+
+  private boolean isValidPlayerPos(Vec2D pos) {
+    var directions = List.of(
+        new Vec2D(BOUNDING_RADIUS, 0),
+        new Vec2D(-BOUNDING_RADIUS, 0),
+        new Vec2D(0, BOUNDING_RADIUS),
+        new Vec2D(0, -BOUNDING_RADIUS)
+    );
+
+    for (var dir : directions) {
+      if (model.checkGridCell(new GridVec(Vec2D.add(pos, dir))) == 1) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   @Override
