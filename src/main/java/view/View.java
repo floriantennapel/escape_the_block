@@ -18,6 +18,7 @@ public class View extends JPanel {
   );
 
   private final ViewableModel model;
+  private Color blockColor = new Color(255, 255, 0);
 
   public View(ViewableModel model) {
     this.model = model;
@@ -36,6 +37,13 @@ public class View extends JPanel {
         paintGameOver(g2);
       }
     }
+  }
+
+  /**
+   * change color of "the block"
+   */
+  public void setBlockColor(Color blockColor) {
+    this.blockColor = blockColor;
   }
 
   private void paintWorld(Graphics2D g2) {
@@ -72,6 +80,9 @@ public class View extends JPanel {
     g2.setFont(new Font("Arial", Font.BOLD, getHeight() / 10));
     g2.setColor(new Color(25, 25, 25));
     drawVertCenteredString(g2, "GAME OVER", width / 2, height / 2);
+
+    g2.setFont(new Font("Arial", Font.BOLD, getHeight() / 20));
+    drawVertCenteredString(g2, "YOU STAYED ALIVE FOR " + model.getScore() + " SECONDS", width / 2, (int) (height * 0.75));
   }
 
   private void drawVertCenteredString(Graphics2D g2, String text, int x, int y) {
@@ -131,7 +142,14 @@ public class View extends JPanel {
     }
 
     double rayLength = wallDirIsX ? totalDistX - deltaDistX : totalDistY - deltaDistY;
-    Color color = cellCodeToColor.get(model.checkGridCell(mapPos));
+    Color color;
+
+    int cellValue = model.checkGridCell(mapPos);
+    if (cellValue == 2) {
+      color = blockColor;
+    } else {
+      color = cellCodeToColor.get(cellValue);
+    }
     if (wallDirIsX) {
       color = color.darker();
     }

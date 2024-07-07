@@ -8,17 +8,19 @@ import view.ViewableModel;
 import java.util.Random;
 
 public class Model implements ViewableModel, ControllableModel {
-  private GameState gameState;
+  private long gameStart;
 
+  private GameState gameState;
   private Vec2D playerPos;
   private Vec2D playerDir;
   private Vec2D viewPort;
-
   private GridVec blockPos;
 
   // new map is generated if block cannot reach player
   private GridMap map;
   private final int mapSize;
+
+  private int score;
 
   public Model(int mapSize) {
     if (mapSize < 3 || mapSize > 1000) {
@@ -34,10 +36,11 @@ public class Model implements ViewableModel, ControllableModel {
     var discretePlayerPos = new GridVec(playerPos);
 
     // making sure block is not spawned too close to player
-    int startDist = 10;
+    int minStartDist = 10;
+    int maxStartDist = 20;
     do {
       blockPos = new GridVec(rand.nextInt(1, mapSize - 1), rand.nextInt(1, mapSize - 1));
-    } while (blockPos.distance(discretePlayerPos) < startDist);
+    } while (blockPos.distance(discretePlayerPos) < minStartDist && blockPos.distance(discretePlayerPos) > maxStartDist);
 
     map = new GridMap(mapSize, blockPos, discretePlayerPos);
 
@@ -119,5 +122,25 @@ public class Model implements ViewableModel, ControllableModel {
   public void setGameOver() {
     gameState = GameState.GAME_OVER;
     map.set(blockPos, 0);
+    score = (int) (timeSinceStart() / 1000);
   }
+
+  @Override
+  public long timeSinceStart() {
+    return System.currentTimeMillis() - gameStart;
+  }
+
+  @Override
+  public int getScore() {
+    return score;
+  }
+
+  /**
+   * sets the start of the game to the current time, should be called when starting a new game
+   */
+  public void setStartTime() {
+    gameStart = System.currentTimeMillis();
+  }
+
+
 }

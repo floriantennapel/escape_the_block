@@ -61,4 +61,9 @@ public interface ControllableModel {
    * set current game state
    */
   void setGameOver();
+
+  /**
+   * number of milliseconds since the game was started
+   */
+  long timeSinceStart();
 }

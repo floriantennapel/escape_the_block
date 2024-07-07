@@ -32,5 +32,12 @@ public interface ViewableModel {
    * get the current game state
    */
   GameState getGameState();
+
+  /**
+   * number of milliseconds since the game was started
+   */
+  long timeSinceStart();
+
+  int getScore();
 }
 

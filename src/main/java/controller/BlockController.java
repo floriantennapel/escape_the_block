@@ -5,11 +5,17 @@ import model.vector.GridVec;
 import view.View;
 
 import javax.swing.Timer;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.List;
 
 public class BlockController implements ActionListener {
+  private static final int MIN_BLOCK_DELAY = 250;
+  private static final int MAX_BLOCK_DELAY = 1500;
+  private static final int TIME_AT_MAX_SPEED = 180;
+
   private static final List<GridVec> MOVE_DIRECTIONS = List.of(
       new GridVec(0, 1),
       new GridVec(0, -1),
@@ -30,8 +36,19 @@ public class BlockController implements ActionListener {
       model.generateNewMap();
     }
 
-    timer = new Timer(1000, this);
+    timer = new Timer(MAX_BLOCK_DELAY, this);
     timer.start();
+  }
+
+  private void setTimerDelay() {
+    int sinceStart = (int) (model.timeSinceStart() / 1000L);
+
+    int delay = Math.max(-sinceStart * (MAX_BLOCK_DELAY - MIN_BLOCK_DELAY) / TIME_AT_MAX_SPEED + MAX_BLOCK_DELAY, MIN_BLOCK_DELAY);
+    timer.setDelay(delay);
+
+    // making block progressively more red as speed increases
+    int green = Math.max(255 - (int) (255 * ((double) sinceStart / TIME_AT_MAX_SPEED)), 0);
+    view.setBlockColor(new Color(255, green, 0));
   }
 
   @Override
@@ -49,6 +66,7 @@ public class BlockController implements ActionListener {
       model.setGameOver();
     }
 
+    setTimerDelay();
     view.repaint();
   }
 
