@@ -1,5 +1,6 @@
 package controller;
 
+import model.GameState;
 import model.vector.GridVec;
 import view.View;
 
@@ -35,11 +36,19 @@ public class BlockController implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
+    if (model.getGameState() != GameState.ACTIVE) {
+      return;
+    }
+
     GridVec path = bfs();
     if (path == null) {
       path = model.getBlockPos();
     }
     model.setBlockPos(path);
+    if (path.equals(new GridVec(model.getPlayerPos()))) {
+      model.setGameOver();
+    }
+
     view.repaint();
   }
 

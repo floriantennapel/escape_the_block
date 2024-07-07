@@ -1,5 +1,6 @@
 package view;
 
+import model.GameState;
 import model.vector.GridVec;
 import model.vector.Vec2D;
 
@@ -26,5 +27,10 @@ public interface ViewableModel {
    * rays should be made ranging from direction + -viewport to direction + viewport
    */
   Vec2D getViewport();
+
+  /**
+   * get the current game state
+   */
+  GameState getGameState();
 }
 

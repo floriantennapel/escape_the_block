@@ -1,5 +1,6 @@
 package controller;
 
+import model.GameState;
 import model.vector.GridVec;
 import model.vector.Vec2D;
 
@@ -50,4 +51,14 @@ public interface ControllableModel {
    * check if pos is a valid position on the map
    */
   boolean isValidPos(GridVec pos);
+
+  /**
+   * get the current game state
+   */
+  GameState getGameState();
+
+  /**
+   * set current game state
+   */
+  void setGameOver();
 }

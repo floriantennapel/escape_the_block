@@ -8,9 +8,12 @@ import view.ViewableModel;
 import java.util.Random;
 
 public class Model implements ViewableModel, ControllableModel {
+  private GameState gameState;
+
   private Vec2D playerPos;
   private Vec2D playerDir;
   private Vec2D viewPort;
+
   private GridVec blockPos;
 
   // new map is generated if block cannot reach player
@@ -39,6 +42,7 @@ public class Model implements ViewableModel, ControllableModel {
     map = new GridMap(mapSize, blockPos, discretePlayerPos);
 
     this.mapSize = mapSize;
+    gameState = GameState.ACTIVE;
   }
 
   @Override
@@ -104,5 +108,16 @@ public class Model implements ViewableModel, ControllableModel {
   @Override
   public GridVec getBlockPos() {
     return blockPos;
+  }
+
+  @Override
+  public GameState getGameState() {
+    return gameState;
+  }
+
+  @Override
+  public void setGameOver() {
+    gameState = GameState.GAME_OVER;
+    map.set(blockPos, 0);
   }
 }

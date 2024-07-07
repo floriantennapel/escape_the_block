@@ -6,6 +6,7 @@ import model.vector.Vec2D;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
@@ -28,12 +29,26 @@ public class View extends JPanel {
     super.paintComponent(g);
     Graphics2D g2 = (Graphics2D) g;
 
-    paintWorld(g2);
+    switch (model.getGameState()) {
+      case ACTIVE -> paintWorld(g2);
+      case GAME_OVER -> {
+        paintWorld(g2);
+        paintGameOver(g2);
+      }
+    }
   }
 
   private void paintWorld(Graphics2D g2) {
     int winHeight = getHeight();
     int winWidth = getWidth();
+
+    Rectangle2D sky = new Rectangle2D.Double(0., 0., winWidth, winHeight / 2.);
+    g2.setColor(new Color(240, 255, 255));
+    g2.fill(sky);
+
+    Rectangle2D floor = new Rectangle2D.Double(0., winHeight / 2., winWidth, winHeight / 2.);
+    g2.setColor(new Color(100, 200, 150));
+    g2.fill(floor);
 
     var rays = generateRays();
     for (int i = 0; i < winWidth; i++) {
@@ -44,6 +59,24 @@ public class View extends JPanel {
       g2.setColor(rayInfo.color());
       g2.draw(line);
     }
+  }
+
+  private void paintGameOver(Graphics2D g2) {
+    int width = getWidth();
+    int height = getHeight();
+
+    Rectangle2D foreground = new Rectangle2D.Double(0, 0, width, height);
+    g2.setColor(new Color(150, 0, 0, 170));
+    g2.fill(foreground);
+
+    g2.setFont(new Font("Arial", Font.BOLD, getHeight() / 10));
+    g2.setColor(new Color(25, 25, 25));
+    drawVertCenteredString(g2, "GAME OVER", width / 2, height / 2);
+  }
+
+  private void drawVertCenteredString(Graphics2D g2, String text, int x, int y) {
+    int stringWidth = g2.getFontMetrics().stringWidth(text);
+    g2.drawString(text, x - stringWidth / 2, y);
   }
 
   private List<Vec2D> generateRays() {

@@ -71,6 +71,16 @@ public class KeyController implements KeyListener, ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent actionEvent) {
+    switch (model.getGameState()) {
+      case ACTIVE -> activeGameController();
+      case GAME_OVER -> {}
+      case START_MENU -> {}
+    }
+
+    view.repaint();
+  }
+
+  private void activeGameController() {
     Vec2D currentPos = model.getPlayerPos();
     Vec2D toMove = new Vec2D(0, 0);
 
@@ -93,12 +103,15 @@ public class KeyController implements KeyListener, ActionListener {
       var nextPos = Vec2D.add(currentPos, toMove);
 
       // bounds checking
-      if (model.checkGridCell(new GridVec(nextPos)) == 0) {
-        model.setPlayerPos(nextPos);
+      switch (model.checkGridCell(new GridVec(nextPos))) {
+        case 0 -> model.setPlayerPos(nextPos);
+        case 2 -> {
+          model.setPlayerPos(nextPos);
+          model.setGameOver();
+        }
+        default -> {}
       }
     }
-
-    view.repaint();
   }
 
   @Override
