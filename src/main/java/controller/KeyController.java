@@ -15,7 +15,7 @@ import view.View;
 import javax.swing.*;
 
 public class KeyController implements KeyListener, ActionListener {
-  private final static double BOUNDING_RADIUS = 0.3;
+  private final static double BOUNDING_RADIUS = 0.1;
   private final static double MOVE_AMOUNT = 0.05;
   private final static Map<Direction, Double> MOVE_ANGLES = Map.of(
       Direction.FRONT, 0.,
@@ -128,7 +128,7 @@ public class KeyController implements KeyListener, ActionListener {
     double rotAmount = 0.1;
 
     double cos = cosAngleDiff(dir, rotLeft);
-    while (cos > 0.25) {
+    while (cos > 0) {
       rotLeft = rotLeft.rotate(rotAmount);
       rotRight = rotRight.rotate(-rotAmount);
 
@@ -152,11 +152,17 @@ public class KeyController implements KeyListener, ActionListener {
   }
 
   private boolean isValidPlayerPos(Vec2D pos) {
+    double diag = Math.sqrt(2 * BOUNDING_RADIUS) / 2.;
+
     var directions = List.of(
         new Vec2D(BOUNDING_RADIUS, 0),
         new Vec2D(-BOUNDING_RADIUS, 0),
         new Vec2D(0, BOUNDING_RADIUS),
-        new Vec2D(0, -BOUNDING_RADIUS)
+        new Vec2D(0, -BOUNDING_RADIUS),
+        new Vec2D(diag, diag),
+        new Vec2D(-diag, diag),
+        new Vec2D(diag, -diag),
+        new Vec2D(-diag, -diag)
     );
 
     for (var dir : directions) {
