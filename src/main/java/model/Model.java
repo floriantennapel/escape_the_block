@@ -27,25 +27,8 @@ public class Model implements ViewableModel, ControllableModel {
       throw new IllegalArgumentException("invalid map size");
     }
 
-    playerDir = new Vec2D(0, 1);
-    viewPort = new Vec2D(0.7, 0);
-
-    var rand = new Random();
-
-    playerPos = new Vec2D(rand.nextInt(2, mapSize - 2) + 0.5, rand.nextInt(2, mapSize - 2) + 0.5);
-    var discretePlayerPos = new GridVec(playerPos);
-
-    // making sure block is not spawned too close to player
-    int minStartDist = 10;
-    int maxStartDist = 20;
-    do {
-      blockPos = new GridVec(rand.nextInt(1, mapSize - 1), rand.nextInt(1, mapSize - 1));
-    } while (blockPos.distance(discretePlayerPos) < minStartDist && blockPos.distance(discretePlayerPos) > maxStartDist);
-
-    map = new GridMap(mapSize, blockPos, discretePlayerPos);
-
     this.mapSize = mapSize;
-    gameState = GameState.ACTIVE;
+    startNewGame();
   }
 
   @Override
@@ -131,16 +114,30 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public int getScore() {
-    return score;
-  }
+  public void startNewGame() {
+    playerDir = new Vec2D(0, 1);
+    viewPort = new Vec2D(0.7, 0);
 
-  /**
-   * sets the start of the game to the current time, should be called when starting a new game
-   */
-  public void setStartTime() {
+    var rand = new Random();
+
+    playerPos = new Vec2D(rand.nextInt(2, mapSize - 2) + 0.5, rand.nextInt(2, mapSize - 2) + 0.5);
+    var discretePlayerPos = new GridVec(playerPos);
+
+    // making sure block is not spawned too close to player
+    int minStartDist = 10;
+    int maxStartDist = 20;
+    do {
+      blockPos = new GridVec(rand.nextInt(1, mapSize - 1), rand.nextInt(1, mapSize - 1));
+    } while (blockPos.distance(discretePlayerPos) < minStartDist && blockPos.distance(discretePlayerPos) > maxStartDist);
+
+    map = new GridMap(mapSize, blockPos, discretePlayerPos);
+    gameState = GameState.ACTIVE;
+
     gameStart = System.currentTimeMillis();
   }
 
-
+  @Override
+  public int getScore() {
+    return score;
+  }
 }

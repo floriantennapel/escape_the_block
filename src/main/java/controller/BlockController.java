@@ -14,7 +14,7 @@ import java.util.List;
 public class BlockController implements ActionListener {
   private static final int MIN_BLOCK_DELAY = 250;
   private static final int MAX_BLOCK_DELAY = 1500;
-  private static final int TIME_AT_MAX_SPEED = 180;
+  private static final int TIME_AT_MAX_SPEED = 180; // seconds until block is at max speed
 
   private static final List<GridVec> MOVE_DIRECTIONS = List.of(
       new GridVec(0, 1),

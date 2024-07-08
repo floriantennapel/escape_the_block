@@ -49,26 +49,20 @@ public class KeyController implements KeyListener, ActionListener {
 
   @Override
   public void keyPressed(KeyEvent keyEvent) {
-    switch (keyEvent.getKeyCode()) {
-      case KeyEvent.VK_W     -> moving.put(Direction.FRONT, true);
-      case KeyEvent.VK_S     -> moving.put(Direction.BACK, true);
-      case KeyEvent.VK_A     -> moving.put(Direction.LEFT, true);
-      case KeyEvent.VK_D     -> moving.put(Direction.RIGHT, true);
-      case KeyEvent.VK_LEFT  -> moving.put(Direction.ROT_LEFT, true);
-      case KeyEvent.VK_RIGHT -> moving.put(Direction.ROT_RIGHT, true);
+    switch (model.getGameState()) {
+      case ACTIVE -> toggleKeys(keyEvent, true);
+      case GAME_OVER -> {
+        if (keyEvent.getKeyCode() == KeyEvent.VK_ENTER) {
+          model.startNewGame();
+        }
+      }
+      default -> {}
     }
   }
 
   @Override
   public void keyReleased(KeyEvent keyEvent) {
-    switch (keyEvent.getKeyCode()) {
-      case KeyEvent.VK_W     -> moving.put(Direction.FRONT, false);
-      case KeyEvent.VK_S     -> moving.put(Direction.BACK, false);
-      case KeyEvent.VK_A     -> moving.put(Direction.LEFT, false);
-      case KeyEvent.VK_D     -> moving.put(Direction.RIGHT, false);
-      case KeyEvent.VK_LEFT  -> moving.put(Direction.ROT_LEFT, false);
-      case KeyEvent.VK_RIGHT -> moving.put(Direction.ROT_RIGHT, false);
-    }
+    toggleKeys(keyEvent, false);
   }
 
   @Override
@@ -80,6 +74,17 @@ public class KeyController implements KeyListener, ActionListener {
     }
 
     view.repaint();
+  }
+
+  private void toggleKeys(KeyEvent keyEvent, boolean value) {
+    switch (keyEvent.getKeyCode()) {
+      case KeyEvent.VK_W     -> moving.put(Direction.FRONT, value);
+      case KeyEvent.VK_S     -> moving.put(Direction.BACK, value);
+      case KeyEvent.VK_A     -> moving.put(Direction.LEFT, value);
+      case KeyEvent.VK_D     -> moving.put(Direction.RIGHT, value);
+      case KeyEvent.VK_LEFT  -> moving.put(Direction.ROT_LEFT, value);
+      case KeyEvent.VK_RIGHT -> moving.put(Direction.ROT_RIGHT, value);
+    }
   }
 
   private void activeGameController() {
@@ -151,6 +156,9 @@ public class KeyController implements KeyListener, ActionListener {
     return Vec2D.dotProduct(a, b) / a.length() / b.length();
   }
 
+  /**
+   * checking if the circle of radius {@code BOUNDING_RADIUS} is free
+   */
   private boolean isValidPlayerPos(Vec2D pos) {
     double diag = Math.sqrt(2 * BOUNDING_RADIUS) / 2.;
 

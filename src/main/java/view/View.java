@@ -83,6 +83,9 @@ public class View extends JPanel {
 
     g2.setFont(new Font("Arial", Font.BOLD, getHeight() / 20));
     drawVertCenteredString(g2, "YOU STAYED ALIVE FOR " + model.getScore() + " SECONDS", width / 2, (int) (height * 0.75));
+
+    g2.setFont(new Font("Arial", Font.PLAIN, getHeight() / 25));
+    drawVertCenteredString(g2, "Press Enter to play again", width / 2, (int) (height * 0.9));
   }
 
   private void drawVertCenteredString(Graphics2D g2, String text, int x, int y) {

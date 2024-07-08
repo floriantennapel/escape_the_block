@@ -66,4 +66,9 @@ public interface ControllableModel {
    * number of milliseconds since the game was started
    */
   long timeSinceStart();
+
+  /**
+   * set gameState to active and reset all need attributes for new game
+   */
+  void startNewGame();
 }
