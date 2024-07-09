@@ -21,8 +21,23 @@ public class View extends JPanel {
   private Color blockColor = new Color(255, 255, 0);
 
   public View(ViewableModel model) {
+    if (model == null) {
+      throw new NullPointerException();
+    }
+
     this.model = model;
     this.setPreferredSize(new Dimension(800, 600));
+  }
+
+  /**
+   * change color of "the block"
+   */
+  public void setBlockColor(Color blockColor) {
+    if (blockColor == null) {
+      throw new NullPointerException();
+    }
+
+    this.blockColor = blockColor;
   }
 
   @Override
@@ -37,13 +52,6 @@ public class View extends JPanel {
         paintGameOver(g2);
       }
     }
-  }
-
-  /**
-   * change color of "the block"
-   */
-  public void setBlockColor(Color blockColor) {
-    this.blockColor = blockColor;
   }
 
   private void paintWorld(Graphics2D g2) {

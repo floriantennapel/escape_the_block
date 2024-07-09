@@ -22,9 +22,12 @@ public class Model implements ViewableModel, ControllableModel {
 
   private int score;
 
+  /**
+   * @param mapSize must be in range {@code MIN_MAP_SIZE} to {@code MAX_MAP_SIZE}
+   */
   public Model(int mapSize) {
-    if (mapSize < 3 || mapSize > 1000) {
-      throw new IllegalArgumentException("invalid map size");
+    if (mapSize < GridMap.MIN_MAP_SIZE || mapSize > GridMap.MAX_MAP_SIZE) {
+      throw new IllegalArgumentException("Invalid map size");
     }
 
     this.mapSize = mapSize;
@@ -33,6 +36,9 @@ public class Model implements ViewableModel, ControllableModel {
 
   @Override
   public int checkGridCell(GridVec pos) throws IndexOutOfBoundsException {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
     if (!map.validPos(pos)) {
       throw new IndexOutOfBoundsException();
     }
@@ -47,6 +53,9 @@ public class Model implements ViewableModel, ControllableModel {
 
   @Override
   public void setBlockPos(GridVec pos) throws IndexOutOfBoundsException {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
     if (!map.validPos(pos)) {
       throw new IndexOutOfBoundsException();
     }
@@ -58,6 +67,10 @@ public class Model implements ViewableModel, ControllableModel {
 
   @Override
   public boolean isValidPos(GridVec pos) {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
+
     return map.validPos(pos);
   }
 
@@ -68,6 +81,10 @@ public class Model implements ViewableModel, ControllableModel {
 
   @Override
   public void setPlayerPos(Vec2D pos) throws IndexOutOfBoundsException {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
+
     if (!map.validPos(new GridVec(pos))) {
       throw new IndexOutOfBoundsException();
     }
@@ -123,12 +140,12 @@ public class Model implements ViewableModel, ControllableModel {
     playerPos = new Vec2D(rand.nextInt(2, mapSize - 2) + 0.5, rand.nextInt(2, mapSize - 2) + 0.5);
     var discretePlayerPos = new GridVec(playerPos);
 
-    // making sure block is not spawned too close to player
-    int minStartDist = 10;
-    int maxStartDist = 20;
+    // making sure block is not spawned too close nor too far from player
+    int minStartDist = 5;
+    int maxStartDist = 10;
     do {
       blockPos = new GridVec(rand.nextInt(1, mapSize - 1), rand.nextInt(1, mapSize - 1));
-    } while (blockPos.distance(discretePlayerPos) < minStartDist && blockPos.distance(discretePlayerPos) > maxStartDist);
+    } while (blockPos.distance(discretePlayerPos) < minStartDist || blockPos.distance(discretePlayerPos) > maxStartDist);
 
     map = new GridMap(mapSize, blockPos, discretePlayerPos);
     gameState = GameState.ACTIVE;

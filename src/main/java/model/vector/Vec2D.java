@@ -6,7 +6,7 @@ public record Vec2D(double x, double y) {
   }
 
   /**
-   * dot product of to vectors
+   * dot product of two vectors
    */
   public static double dotProduct(Vec2D a, Vec2D b) {
     return a.x * b.x + a.y * b.y;
@@ -20,7 +20,7 @@ public record Vec2D(double x, double y) {
   }
 
   /**
-   * Create a rotated version of this
+   * Create a rotated version of {@code this}
    * @param theta angle in radians
    */
   public Vec2D rotate(double theta) {

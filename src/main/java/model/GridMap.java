@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GridMap {
+  public static int MIN_MAP_SIZE = 10;
+  public static int MAX_MAP_SIZE = 1000;
+
   // chance of each grid cell being a wall when generating map
   private static final double WALL_SPAWN_RATE = 0.3;
 
@@ -13,13 +16,25 @@ public class GridMap {
   private final int rows;
   private final int cols;
 
+  /**
+   * @param mapSize must be in range {@code MIN_MAP_SIZE} to {@code MAX_MAP_SIZE}
+   */
   public GridMap(int mapSize, GridVec blockPos, GridVec playerPos) {
-    if (mapSize < 3 || mapSize > 1000) {
+    if (mapSize < MIN_MAP_SIZE || mapSize > MAX_MAP_SIZE) {
       throw new IllegalArgumentException("invalid map size");
+    }
+    if (blockPos == null || playerPos == null) {
+      throw new NullPointerException();
     }
 
     rows = mapSize;
     cols = mapSize;
+
+    if (!validPos(blockPos)) {
+      throw new IllegalArgumentException("invalid blockPos");
+    } else if (!validPos(playerPos)) {
+      throw new IllegalArgumentException("invalid playerPos");
+    }
 
     var reserved = new ArrayList<GridVec>();
     reserved.add(blockPos);
@@ -39,6 +54,10 @@ public class GridMap {
    * checks if position is on gridMap
    */
   public boolean validPos(GridVec pos) {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
+
     return pos.x() >= 0 && pos.x() < cols && pos.y() >= 0 && pos.y() < rows;
   }
 
@@ -46,6 +65,9 @@ public class GridMap {
    * @return value stored at given position
    */
   public int get(GridVec pos) throws IndexOutOfBoundsException {
+    if (pos == null) {
+      throw new NullPointerException();
+    }
     if (!validPos(pos)) {
       throw new IndexOutOfBoundsException();
     }

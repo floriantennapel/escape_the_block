@@ -17,6 +17,8 @@ import javax.swing.*;
 public class KeyController implements KeyListener, ActionListener {
   private final static double BOUNDING_RADIUS = 0.1;
   private final static double MOVE_AMOUNT = 0.05;
+
+  // amount to rotate player direction by to get movement vector
   private final static Map<Direction, Double> MOVE_ANGLES = Map.of(
       Direction.FRONT, 0.,
       Direction.BACK, Math.PI,
@@ -32,6 +34,10 @@ public class KeyController implements KeyListener, ActionListener {
   private final Timer timer;
 
   public KeyController(ControllableModel model, View view) {
+    if (model == null || view == null) {
+      throw new NullPointerException();
+    }
+
     moving = new HashMap<>(Direction.values().length);
     for (var dir : Direction.values()) {
       moving.put(dir, false);

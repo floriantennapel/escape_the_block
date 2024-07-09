@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public class Main {
   public static void main(String[] args) {
-    var model = new Model(30);
+    var model = new Model(999);
     var view = new View(model);
     new KeyController(model, view);
     new BlockController(model, view);

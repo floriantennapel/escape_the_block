@@ -12,9 +12,9 @@ import java.util.*;
 import java.util.List;
 
 public class BlockController implements ActionListener {
-  private static final int MIN_BLOCK_DELAY = 350; // max speed, time between each block movement in ms
+  private static final int MIN_BLOCK_DELAY = 300; // max speed, time between each block movement in ms
   private static final int MAX_BLOCK_DELAY = 1500; // min speed, time between each block movement in ms
-  private static final int TIME_AT_MAX_SPEED = 180; // seconds it takes block to reach max speed
+  private static final int TIME_AT_MAX_SPEED = 30; // seconds it takes block to reach max speed
 
   private static final List<GridVec> MOVE_DIRECTIONS = List.of(
       new GridVec(0, 1),
@@ -28,6 +28,10 @@ public class BlockController implements ActionListener {
   private final Timer timer;
 
   public BlockController(ControllableModel model, View view) {
+    if (model == null || view == null) {
+      throw new NullPointerException();
+    }
+
     this.model = model;
     this.view = view;
 

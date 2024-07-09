@@ -38,6 +38,9 @@ public interface ViewableModel {
    */
   long timeSinceStart();
 
+  /**
+   * @return score achieved at game over
+   */
   int getScore();
 }
 
