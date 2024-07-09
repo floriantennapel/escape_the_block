@@ -157,7 +157,7 @@ public class KeyController implements KeyListener, ActionListener {
   }
 
   /**
-   * checking if the circle of radius {@code BOUNDING_RADIUS} is free
+   * checking if the circle with radius {@code BOUNDING_RADIUS} is free
    */
   private boolean isValidPlayerPos(Vec2D pos) {
     double diag = Math.sqrt(2 * BOUNDING_RADIUS) / 2.;

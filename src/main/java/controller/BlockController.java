@@ -12,9 +12,9 @@ import java.util.*;
 import java.util.List;
 
 public class BlockController implements ActionListener {
-  private static final int MIN_BLOCK_DELAY = 250;
-  private static final int MAX_BLOCK_DELAY = 1500;
-  private static final int TIME_AT_MAX_SPEED = 180; // seconds until block is at max speed
+  private static final int MIN_BLOCK_DELAY = 250; // max speed, time between each block movement in ms
+  private static final int MAX_BLOCK_DELAY = 1500; // min speed, time between each block movement in ms
+  private static final int TIME_AT_MAX_SPEED = 180; // seconds it takes block to reach max speed
 
   private static final List<GridVec> MOVE_DIRECTIONS = List.of(
       new GridVec(0, 1),
@@ -32,7 +32,7 @@ public class BlockController implements ActionListener {
     this.view = view;
 
     // checking if player is reachable
-    while (bfs() == null) {
+    while (findPath() == null) {
       model.generateNewMap();
     }
 
@@ -57,7 +57,7 @@ public class BlockController implements ActionListener {
       return;
     }
 
-    GridVec path = bfs();
+    GridVec path = findPath();
     if (path == null) {
       path = model.getBlockPos();
     }
@@ -70,11 +70,17 @@ public class BlockController implements ActionListener {
     view.repaint();
   }
 
-  private GridVec bfs() {
+  /**
+   * A* algorithm
+   * approx. heuristic. == steps taken + Euclidean heuristic. to player
+   * @return the first step in the path
+   */
+  private GridVec findPath() {
     var playerPos = new GridVec(model.getPlayerPos());
+    var blockPos = model.getBlockPos();
 
-    Queue<QueueElem> queue = new ArrayDeque<>();
-    queue.add(new QueueElem(model.getBlockPos(), null));
+    Queue<QueueElem> queue = new PriorityQueue<>();
+    queue.add(new QueueElem(blockPos, null, 0, blockPos.distance(playerPos)));
     Set<GridVec> visited = new HashSet<>();
 
     while (!queue.isEmpty()) {
@@ -95,7 +101,7 @@ public class BlockController implements ActionListener {
       for (var dir : MOVE_DIRECTIONS) {
         var nextBlock = GridVec.add(current.pos, dir);
         if (model.isValidPos(nextBlock) && model.checkGridCell(nextBlock) == 0) {
-          queue.add(new QueueElem(nextBlock, current));
+          queue.add(new QueueElem(nextBlock, current, current.steps + 1, nextBlock.distance(playerPos)));
         }
       }
     }
@@ -116,5 +122,14 @@ public class BlockController implements ActionListener {
     return after;
   }
 
-  private record QueueElem(GridVec pos, QueueElem prev) {}
+  private record QueueElem(GridVec pos, QueueElem prev, int steps, double heuristic) implements Comparable<QueueElem> {
+    @Override
+    public int compareTo(QueueElem o) {
+      if (o == null) {
+        throw new NullPointerException();
+      }
+
+      return Double.compare(steps + heuristic, o.steps + o.heuristic);
+    }
+  }
 }
