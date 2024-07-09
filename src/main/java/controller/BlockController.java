@@ -72,7 +72,7 @@ public class BlockController implements ActionListener {
 
   /**
    * A* algorithm
-   * approx. heuristic. == steps taken + Euclidean heuristic. to player
+   * approx. dist. == steps taken + Euclidean dist. to player
    * @return the first step in the path
    */
   private GridVec findPath() {
