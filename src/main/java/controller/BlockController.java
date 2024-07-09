@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.List;
 
 public class BlockController implements ActionListener {
-  private static final int MIN_BLOCK_DELAY = 250; // max speed, time between each block movement in ms
+  private static final int MIN_BLOCK_DELAY = 350; // max speed, time between each block movement in ms
   private static final int MAX_BLOCK_DELAY = 1500; // min speed, time between each block movement in ms
   private static final int TIME_AT_MAX_SPEED = 180; // seconds it takes block to reach max speed
 
@@ -98,16 +98,20 @@ public class BlockController implements ActionListener {
         return step;
       }
 
-      for (var dir : MOVE_DIRECTIONS) {
-        var nextBlock = GridVec.add(current.pos, dir);
-        if (model.isValidPos(nextBlock) && model.checkGridCell(nextBlock) == 0) {
-          queue.add(new QueueElem(nextBlock, current, current.steps + 1, nextBlock.distance(playerPos)));
-        }
-      }
+      addNextMoves(queue, current, playerPos);
     }
 
     System.err.println("No path found");
     return null;
+  }
+
+  private void addNextMoves(Queue<QueueElem> queue, QueueElem current, GridVec playerPos) {
+    for (var dir : MOVE_DIRECTIONS) {
+      var nextBlock = GridVec.add(current.pos, dir);
+      if (model.isValidPos(nextBlock) && model.checkGridCell(nextBlock) == 0) {
+        queue.add(new QueueElem(nextBlock, current, current.steps + 1, nextBlock.distance(playerPos)));
+      }
+    }
   }
 
   private GridVec getFirstStep(QueueElem qe) {
