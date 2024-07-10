@@ -2,8 +2,7 @@ package model;
 
 import model.vector.GridVec;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GridMap {
   public static int MIN_MAP_SIZE = 10;
@@ -12,14 +11,21 @@ public class GridMap {
   // chance of each grid cell being a wall when generating map
   private static final double WALL_SPAWN_RATE = 0.3;
 
-  private final List<List<Integer>> gridMap;
+  private static final List<GridVec> MOVE_DIRECTIONS = List.of(
+      new GridVec(0, 1),
+      new GridVec(0, -1),
+      new GridVec(1, 0),
+      new GridVec(-1, 0)
+  );
+
+  private List<List<Integer>> gridMap;
   private final int rows;
   private final int cols;
 
   /**
    * @param mapSize must be in range {@code MIN_MAP_SIZE} to {@code MAX_MAP_SIZE}
    */
-  public GridMap(int mapSize, GridVec blockPos, GridVec playerPos) {
+  GridMap(int mapSize, GridVec blockPos, GridVec playerPos) {
     if (mapSize < MIN_MAP_SIZE || mapSize > MAX_MAP_SIZE) {
       throw new IllegalArgumentException("invalid map size");
     }
@@ -46,14 +52,16 @@ public class GridMap {
       }
     }
 
-    gridMap = generateRandomMap(mapSize, reserved);
-    gridMap.get(blockPos.y()).set(blockPos.x(), 2);
+    do {
+      gridMap = generateRandomMap(mapSize, reserved);
+      gridMap.get(blockPos.y()).set(blockPos.x(), 2);
+    } while (findPath(blockPos, playerPos) == null);
   }
 
   /**
    * checks if position is on gridMap
    */
-  public boolean validPos(GridVec pos) {
+  boolean validPos(GridVec pos) {
     if (pos == null) {
       throw new NullPointerException();
     }
@@ -64,7 +72,7 @@ public class GridMap {
   /**
    * @return value stored at given position
    */
-  public int get(GridVec pos) throws IndexOutOfBoundsException {
+  int get(GridVec pos) throws IndexOutOfBoundsException {
     if (pos == null) {
       throw new NullPointerException();
     }
@@ -79,7 +87,7 @@ public class GridMap {
    * Set value at given position
    * @param val must be in range 0 to 99
    */
-  public void set(GridVec pos, int val) throws IndexOutOfBoundsException {
+  void set(GridVec pos, int val) throws IndexOutOfBoundsException {
     if (pos == null) {
       throw new NullPointerException();
     }
@@ -91,6 +99,59 @@ public class GridMap {
     }
 
     gridMap.get(pos.y()).set(pos.x(), val);
+  }
+
+  /**
+   * A* algorithm
+   * approx. dist. == steps taken + Euclidean dist. to player
+   * @return the first step in the path
+   */
+  GridVec findPath(GridVec from, GridVec to) {
+    Queue<QueueElem> queue = new PriorityQueue<>();
+    queue.add(new QueueElem(from, null, 0, from.distance(to)));
+    Set<GridVec> visited = new HashSet<>();
+
+    while (!queue.isEmpty()) {
+      var current = queue.poll();
+      if (visited.contains(current.pos)) {
+        continue;
+      }
+      visited.add(current.pos);
+
+      if (current.pos.equals(to)) {
+        var step = getFirstStep(current);
+        if (step == null) {
+          return from;
+        }
+        return step;
+      }
+
+      addNextMoves(queue, current, to);
+    }
+
+    System.err.println("No path found");
+    return null;
+  }
+
+  private void addNextMoves(Queue<QueueElem> queue, QueueElem current, GridVec playerPos) {
+    for (var dir : MOVE_DIRECTIONS) {
+      var nextBlock = GridVec.add(current.pos, dir);
+      if (validPos(nextBlock) && get(nextBlock) == 0) {
+        queue.add(new QueueElem(nextBlock, current, current.steps + 1, nextBlock.distance(playerPos)));
+      }
+    }
+  }
+
+  private GridVec getFirstStep(QueueElem qe) {
+    var current = qe;
+    GridVec after = null;
+
+    while (current.prev != null) {
+      after = current.pos;
+      current = current.prev;
+    }
+
+    return after;
   }
 
   private List<List<Integer>> generateRandomMap(int mapSize, List<GridVec> reserved) {
@@ -137,5 +198,16 @@ public class GridMap {
     }
 
     return s.substring(0, s.length() - 1);
+  }
+
+  private record QueueElem(GridVec pos, QueueElem prev, int steps, double heuristic) implements Comparable<QueueElem> {
+    @Override
+    public int compareTo(QueueElem o) {
+      if (o == null) {
+        throw new NullPointerException();
+      }
+
+      return Double.compare(steps + heuristic, o.steps + o.heuristic);
+    }
   }
 }

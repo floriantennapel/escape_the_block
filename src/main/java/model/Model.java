@@ -16,7 +16,6 @@ public class Model implements ViewableModel, ControllableModel {
   private Vec2D viewPort;
   private GridVec blockPos;
 
-  // new map is generated if block cannot reach player
   private GridMap map;
   private final int mapSize;
 
@@ -47,11 +46,6 @@ public class Model implements ViewableModel, ControllableModel {
   }
 
   @Override
-  public void generateNewMap() {
-    map = new GridMap(mapSize, blockPos, new GridVec(playerPos));
-  }
-
-  @Override
   public void setBlockPos(GridVec pos) throws IndexOutOfBoundsException {
     if (pos == null) {
       throw new NullPointerException();
@@ -63,15 +57,6 @@ public class Model implements ViewableModel, ControllableModel {
     map.set(blockPos, 0);
     blockPos = pos;
     map.set(blockPos, 2);
-  }
-
-  @Override
-  public boolean isValidPos(GridVec pos) {
-    if (pos == null) {
-      throw new NullPointerException();
-    }
-
-    return map.validPos(pos);
   }
 
   @Override
@@ -128,6 +113,11 @@ public class Model implements ViewableModel, ControllableModel {
   @Override
   public long timeSinceStart() {
     return System.currentTimeMillis() - gameStart;
+  }
+
+  @Override
+  public GridVec findBlockPath() {
+    return map.findPath(blockPos, new GridVec(playerPos));
   }
 
   @Override

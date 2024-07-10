@@ -12,11 +12,6 @@ public interface ControllableModel {
   void setPlayerPos(Vec2D pos) throws IndexOutOfBoundsException;
 
   /**
-   * generate a new map
-   */
-  void generateNewMap();
-
-  /**
    * @return current player position
    */
   Vec2D getPlayerPos();
@@ -48,11 +43,6 @@ public interface ControllableModel {
   void setBlockPos(GridVec pos) throws IndexOutOfBoundsException;
 
   /**
-   * check if pos is a valid position on the map
-   */
-  boolean isValidPos(GridVec pos);
-
-  /**
    * get the current game state
    */
   GameState getGameState();
@@ -71,4 +61,9 @@ public interface ControllableModel {
    * set gameState to active and reset all need attributes for new game
    */
   void startNewGame();
+
+  /**
+   * Find first step block must take to reach player
+   */
+  GridVec findBlockPath();
 }
